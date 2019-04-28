@@ -13,3 +13,13 @@ class Admin(db.Model):
     blog_sub_title = db.Column(db.String(250))
     about = db.Column(db.String(450))
 
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100))
+    body = db.Column(db.String)
+
+class Comment(db.Model):
+    pass
+
+class Catebory(db.Model):
+    pass
