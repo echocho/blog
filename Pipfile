@@ -15,6 +15,7 @@ flask-migrate = "*"
 flask-moment = "*"
 click = "*"
 bootstrap-flask = "*"
+flask-mail = "*"
 
 [requires]
 python_version = "3.7"
