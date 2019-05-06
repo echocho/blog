@@ -24,12 +24,19 @@ class Post(db.Model):
     # TODO: relationship with category
 
     @staticmethod
+    def create(id, title, body):
+        if all([id, title, body]):
+            new_post = Post(id, title, body)
+            db.session.add(new_post)
+            db.comit()
+
+    @staticmethod
     def delete(id):
         db.session.filter_by(id=id).delete()
         db.commit()
 
     @staticmethod
-    def update(title=None, body=None):
+    def update(id, title=None, body=None):
         post = db.session.filter_by(id=id).first()
         if title:
             post.title = title
