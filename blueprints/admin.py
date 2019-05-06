@@ -1,7 +1,8 @@
-from flask import (Blueprint, flash, jsonify, request)
+from flask import (flash, jsonify, request)
+
+from blueprints import admin_bp
 from models import Post
 
-admin_bp = Blueprint('admin', __name__)
 
 @admin_bp.route('/')
 def index():
@@ -22,7 +23,7 @@ def article_crud():
         if request.method == 'PUT' and all([id_, title, body]):
             create_article(id, title, body)
             # TODO: should respond something in json
-            return flash('Article Craeted')
+            return flash('Article Created')
 
         if request.method == 'DELETE':
             delete_article(id_)
@@ -43,7 +44,7 @@ def delete_article(id_):
 
 
 def get_articles(id_):
-    posts = db.session.query(Post).filter_by(author_id=id_).all()
+    posts = db.session.query(Post).all()
     if posts:
         title_lst = [post.title for post in posts]
         body_lst = [post.body for post in posts]
