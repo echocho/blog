@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from extensions import db
 
 print(db)
@@ -21,6 +23,7 @@ class Post(db.Model):
     id_ = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100))
     body = db.Column(db.String)
+    created_at = db.Column(default=datetime.utcnow())
     # TODO: relationship with category
 
     @staticmethod
