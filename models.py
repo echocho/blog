@@ -46,12 +46,32 @@ class Post(db.Model):
         if body:
             post.body = body
         post.session.commit()
-        
+
+
+class Category(db.Model):
+    id_ = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String)
+
+    @staticmethod
+    def delete(id_):
+        db.session.filter_by(id_=id_).delete()
+        db.commit()
+
+    @staticmethod
+    def create(name):
+        if name and (not db.session.filter_by(name=name).first()):
+            category = Category(name=name)
+            db.session.add(category)
+            db.commit()
+
+    @staticmethod
+    def get():
+        categories = db.session.all()
+        return categories
+
 
 # class Comment(db.Model):
 #     id_ = db.Column(db.Integer, primary_key=True, autoincrement=True)
 #     body = db.Column(db.String)
 #     replied_to = ??
-#
-# class Category(db.Model):
-#     pass
+
