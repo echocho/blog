@@ -5,7 +5,7 @@ import os
 from blueprints.admin import admin_bp
 from blueprints.auth import auth_bp
 from blueprints.blog import blog_bp
-from .extensions import bootstrap, db, mail, moment
+from .extensions import bootstrap, db, mail, migrate, moment
 from .settings import config
 
 
@@ -28,6 +28,7 @@ def configure_extensions(app):
     db.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
+    migrate.init_app(app, db)
 
 
 def register_blueprints(app):
