@@ -16,6 +16,7 @@ flask-moment = "*"
 click = "*"
 bootstrap-flask = "*"
 flask-mail = "*"
+httpie = "*"
 
 [requires]
 python_version = "3.7"
