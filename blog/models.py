@@ -1,10 +1,7 @@
 from datetime import datetime
 
-from extensions import db
+from .extensions import db
 
-print(db)
-print(dir(db))
-print('Model' in dir(db))
 
 class Admin(db.Model):
     __tablename__ = 'blog_admin'

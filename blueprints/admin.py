@@ -1,12 +1,15 @@
 from flask import (flash, jsonify, request)
+from flask import Blueprint
 
-from blueprints import admin_bp
-from models import Post
+from blog.extensions import db
+from blog.models import Post
+
+admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/')
+@admin_bp.route('/', methods=['GET'])
 def index():
-    pass
+    return 'hello from admin page'
 
 
 @admin_bp.route('/articles', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -43,7 +46,7 @@ def delete_article(id_):
     Post.delete(id_)
 
 
-def get_articles(id_):
+def get_articles():
     posts = db.session.query(Post).all()
     if posts:
         title_lst = [post.title for post in posts]

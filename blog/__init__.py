@@ -2,9 +2,14 @@ from flask import Flask
 
 import os
 
-from blueprints import admin_bp, auth_bp, blog_bp
-from extensions import bootstrap, db, mail, moment
-from settings import config
+from blueprints.admin import admin_bp
+from blueprints.auth import auth_bp
+from blueprints.blog import blog_bp
+from .extensions import bootstrap, db, mail, moment
+from .settings import config
+
+
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 def create_app(config_name=None):
@@ -22,15 +27,10 @@ def configure_extensions(app):
     bootstrap.init_app(app)
     db.init_app(app)
     mail.init_app(app)
-    # moment.init(app)
+    moment.init_app(app)
 
 
 def register_blueprints(app):
     app.register_blueprint(blog_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(auth_bp, url_prefix='/auth')
-
-if __name__ == '__main__':
-    app = create_app()
-    configure_extensions(app)
-    register_blueprints(app)
