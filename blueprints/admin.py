@@ -1,4 +1,4 @@
-from flask import (flash, jsonify, request)
+from flask import (flash, json, jsonify, request)
 from flask import Blueprint
 
 from blog.extensions import db
@@ -15,35 +15,43 @@ def index():
 @admin_bp.route('/articles', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def article_crud():
     if request.method == 'GET':
-        get_articles()
-    elif request.args:
-        id_, title, body = request.args.get('id'), request.args.get('title'), request.args.get('body')
-        if request.method == 'POST' and all([id_]) and any([title, body]):
-            update_article(id_, title, body)
-            # TODO: should respond something in json
-            return flash('Article Updated')
+        return get_articles()
 
-        if request.method == 'PUT' and all([id_, title, body]):
-            create_article(id, title, body)
-            # TODO: should respond something in json
-            return flash('Article Created')
+    args = request.get_json()
 
-        if request.method == 'DELETE':
-            delete_article(id_)
-            # TODO: should respond something in json
-            return flash('Article Delete')
+    if request.method == 'PUT':
+        id_, title, body = args.get('id', ''), args.get('title', ''), args.get('body', '')
+        return update_article(id_, title, body)
+
+    if request.method == 'POST':
+        id_, title, body = args.get('id', ''), args.get('title', ''), args.get('body', '')
+        return create_article(title, body)
+
+    if request.method == 'DELETE':
+        id_ = args.get('id', '')
+        return delete_article(id_)
 
 
-def create_article(id_, title, body):
-    Post.create(id_=id_, title=title, body=body)
+def create_article(title, body):
+    created = Post.create(title=title, body=body)
+    if created:
+        return jsonify({'state': '201 Created'})
+    return jsonify({'state': '409 Conflict'})
 
 
 def update_article(id_, title, body):
-    Post.update(id_=id_, title=title, body=body)
+    if all([id_]) and any([title, body]):
+        updated = Post.update(id_=id_, title=title, body=body)
+        if not updated:
+            return jsonify({'state': '404 Not Found'})
+        return jsonify({'state': '200 OK'})
 
 
 def delete_article(id_):
-    Post.delete(id_)
+    deleted = Post.delete(id_)
+    if deleted:
+        return jsonify({'state': '200 OK'})
+    return jsonify({'state': '404 Not Found'})
 
 
 def get_articles():
@@ -54,5 +62,8 @@ def get_articles():
         return_elements = ['title', 'body']
         articles = list(dict(zip(return_elements, title_body)) for title_body in list(zip(title_lst, body_lst)))
 
-        return jsonify({'state': 201,
+        return jsonify({'state': '200 OK',
                         'articles': articles})
+
+    return jsonify({'state': '200 OK',
+                    'articles': []})

@@ -20,29 +20,40 @@ class Post(db.Model):
     id_ = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100))
     body = db.Column(db.String)
-    created_at = db.Column(default=datetime.utcnow())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow())
     # TODO: relationship with category
 
     @staticmethod
-    def create(id_, title, body):
-        if all([id_, title, body]):
-            new_post = Post(id_, title, body)
+    def create(title, body):
+        exists = db.session.query(Post).filter_by(title=title, body=body).first()
+        if not exists:
+            new_post = Post(title=title, body=body)
             db.session.add(new_post)
-            db.comit()
+            db.session.commit()
+            return True
+        return False
 
     @staticmethod
     def delete(id_):
-        db.session.filter_by(id_=id_).delete()
-        db.commit()
+        try:
+            db.session.query(Post).filter_by(id_=int(id_)).delete()
+            db.session.commit()
+            return True
+        except:
+            pass
+        return False
 
     @staticmethod
     def update(id_, title=None, body=None):
-        post = db.session.filter_by(id_=id_).first()
+        post = db.session.query(Post).filter_by(id_=int(id_)).first()
+        if not post:
+            return False
         if title:
             post.title = title
         if body:
             post.body = body
-        post.session.commit()
+        db.session.commit()
+        return True
 
 
 class Category(db.Model):
@@ -52,14 +63,14 @@ class Category(db.Model):
     @staticmethod
     def delete(id_):
         db.session.filter_by(id_=id_).delete()
-        db.commit()
+        db.session.commit()
 
     @staticmethod
     def create(name):
         if name and (not db.session.filter_by(name=name).first()):
             category = Category(name=name)
             db.session.add(category)
-            db.commit()
+            db.session.commit()
 
     @staticmethod
     def get():
