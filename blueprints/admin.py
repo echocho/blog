@@ -18,37 +18,36 @@ def article_crud():
         return get_articles()
 
     args = request.get_json()
+    id, title, body, category_name = args.get('id', ''), args.get('title', ''), \
+                                      args.get('body', ''), args.get('category', '')
 
     if request.method == 'PUT':
-        id_, title, body = args.get('id', ''), args.get('title', ''), args.get('body', '')
-        return update_article(id_, title, body)
+        return update_article(id, title, body, category_name)
 
     if request.method == 'POST':
-        id_, title, body = args.get('id', ''), args.get('title', ''), args.get('body', '')
-        return create_article(title, body)
+        return create_article(title, body, category_name)
 
     if request.method == 'DELETE':
-        id_ = args.get('id', '')
-        return delete_article(id_)
+        return delete_article(id)
 
 
-def create_article(title, body):
-    created = Post.create(title=title, body=body)
+def create_article(title, body, category_name):
+    created = Post.create(title=title, body=body, category_name=category_name)
     if created:
         return jsonify({'state': '201 Created'})
     return jsonify({'state': '409 Conflict'})
 
 
-def update_article(id_, title, body):
-    if all([id_]) and any([title, body]):
-        updated = Post.update(id_=id_, title=title, body=body)
+def update_article(id, title, body, category_name):
+    if all([id]) and any([title, body]):
+        updated = Post.update(id=id, title=title, body=body, category_name=category_name)
         if not updated:
             return jsonify({'state': '404 Not Found'})
         return jsonify({'state': '200 OK'})
 
 
-def delete_article(id_):
-    deleted = Post.delete(id_)
+def delete_article(id):
+    deleted = Post.delete(id)
     if deleted:
         return jsonify({'state': '200 OK'})
     return jsonify({'state': '404 Not Found'})
