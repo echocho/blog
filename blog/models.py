@@ -35,7 +35,7 @@ class Category(db.Model):
 
     @staticmethod
     def get():
-        categories = db.session.all()
+        categories = db.session.query(Category).all()
         return categories
 
 
@@ -87,6 +87,12 @@ class Post(db.Model):
         db.session.commit()
         return True
 
+    @staticmethod
+    def get():
+        posts = db.session.query(Post).all()
+        return posts
+
+
 
 def create_category_if_not_exists(category_name):
     """
@@ -112,6 +118,12 @@ class Comment(db.Model):
     replied_id = db.Column(db.Integer, db.ForeignKey('blog_comment.id'))
     replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
     replies = db.relationship('Comment', back_populates='replied', cascade='all')
+
+    @staticmethod
+    def get():
+        comments = db.session.query(Comment).all()
+        return comments
+
 
 
 
