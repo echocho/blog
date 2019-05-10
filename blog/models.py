@@ -1,4 +1,7 @@
+from flask_login import UserMixin
+
 from datetime import datetime
+import hashlib
 
 from .extensions import db
 
@@ -10,8 +13,21 @@ class Admin(db.Model):
     email = db.Column(db.String, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     blog_name = db.Column(db.String(150))
-    blog_sub_title = db.Column(db.String(250))
+    blog_subtitle = db.Column(db.String(250))
     about = db.Column(db.String(450))
+
+    @staticmethod
+    def hash_password(password):
+        hashed = hashlib.md5(password.encode()).hexdigest()
+        return hashed
+
+    @staticmethod
+    def create(username, password, email):
+        hashed_password = Admin().hash_password(password)
+        user = Admin(username=username, password_hash=hashed_password, email=email)
+        db.session.add(user)
+        db.commit()
+        return True
 
 
 class Category(db.Model):
@@ -91,7 +107,6 @@ class Post(db.Model):
     def get():
         posts = db.session.query(Post).all()
         return posts
-
 
 
 def create_category_if_not_exists(category_name):
