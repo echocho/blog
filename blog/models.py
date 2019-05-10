@@ -35,17 +35,17 @@ class Admin(db.Model):
             raise NotImplementedError('No `id` attribute - override `get_id`')
 
     def __eq__(self, other):
-        '''
+        """
         Checks the equality of two `UserMixin` objects using `get_id`.
-        '''
+        """
         if isinstance(other, UserMixin):
             return self.get_id() == other.get_id()
         return NotImplemented
 
     def __ne__(self, other):
-        '''
+        """
         Checks the inequality of two `UserMixin` objects using `get_id`.
-        '''
+        """
         equal = self.__eq__(other)
         if equal is NotImplemented:
             return NotImplemented
@@ -76,9 +76,17 @@ class Category(db.Model):
     posts = db.relationship('Post', back_populates='category')
 
     @staticmethod
-    def delete(id):
-        db.session.filter_by(id=id).delete()
-        db.session.commit()
+    def delete(name):
+        # remove category foreign key in posts and then delete the category
+        category_id = db.session.query(Category.id).filter_by(name=name).first()
+        if category_id:
+            related_posts = db.session.query(Post).filter_by(category_id=category_id).all()
+            for post in related_posts:
+                post.category_id = None
+            db.session.query(Category).filter_by(name=name).delete()
+            db.session.commit()
+            return True
+      
 
     @staticmethod
     def create(name):
@@ -124,8 +132,7 @@ class Post(db.Model):
             db.session.commit()
             return True
         except:
-            pass
-        return False
+            return False
 
     @staticmethod
     def update(id, title=None, body=None, category_name=None):
