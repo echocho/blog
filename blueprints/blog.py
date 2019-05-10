@@ -43,8 +43,9 @@ def register():
         return jsonify({'state': '201 Created'})
 
 
-@blog_bp.route('/check', methods=['GET'])
+@blog_bp.route('/check/', methods=['GET'])
 @login_required
 def authenticated():
     return jsonify({'state': '200 OK',
                     'desc': 'you are authenticated!'})
+
