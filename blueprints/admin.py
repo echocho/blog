@@ -1,8 +1,10 @@
 from flask import (jsonify, request, Blueprint)
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from blog.extensions import db
-from blog.models import Post
+from blog.models import Admin, Post
+from utils import (create_article, update_article, delete_article, get_articles,
+                   get_category_lst, create_category, delete_category)
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -32,38 +34,40 @@ def article_crud():
         return delete_article(id)
 
 
-def create_article(title, body, category_name):
-    created = Post.create(title=title, body=body, category_name=category_name)
-    if created:
-        return jsonify({'state': '201 Created'})
-    return jsonify({'state': '409 Conflict'})
-
-
-def update_article(id, title, body, category_name):
-    if all([id]) and any([title, body]):
-        updated = Post.update(id=id, title=title, body=body, category_name=category_name)
-        if not updated:
-            return jsonify({'state': '404 Not Found'})
-        return jsonify({'state': '200 OK'})
-
-
-def delete_article(id):
-    deleted = Post.delete(id)
-    if deleted:
-        return jsonify({'state': '200 OK'})
-    return jsonify({'state': '404 Not Found'})
-
-
-def get_articles():
-    posts = db.session.query(Post).all()
-    if posts:
-        title_lst = [post.title for post in posts]
-        body_lst = [post.body for post in posts]
-        return_elements = ['title', 'body']
-        articles = list(dict(zip(return_elements, title_body)) for title_body in list(zip(title_lst, body_lst)))
-
+@admin_bp.route('/category/', methods=['GET', 'POST', 'DELETE'])
+@login_required
+def category_crud():
+    if request.method == 'GET':
+        categories =  get_category_lst()
         return jsonify({'state': '200 OK',
-                        'articles': articles})
+                         'data': categories})
 
-    return jsonify({'state': '200 OK',
-                    'articles': []})
+    name = request.get_json().get('name', '')
+
+    if request.method == 'POST':
+        return create_category(name)
+
+    if request.method == 'DELETE':
+        return delete_category(name)
+
+
+@admin_bp.route('/profile/', methods=['GET', 'PUT'])
+@login_required
+def edit_profile():
+    if request.method == 'PUT':
+        args = request.get_json()
+        blog_name, about, blog_subtitle = args.get('blog_name', None), args.get('about', None), args.get('blog_subtitle', None)
+        blog = db.session.query(Admin).filter_by(username=current_user.username).first()
+        if blog_name:
+            blog.blog_name = blog_name
+        if about:
+            blog.about = about
+        if blog_subtitle:
+            blog.blog_subtitle = blog_subtitle
+        db.session.commit()
+        return jsonify({'state': '200 OK'})
+    return jsonify({'data': {'username': current_user.username,
+                             'email': current_user.email,
+                             'blog_name': current_user.blog_name,
+                             'about': current_user.about,
+                             'blog_subtitle': current_user.blog_subtitle}})
