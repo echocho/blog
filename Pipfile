@@ -17,6 +17,7 @@ click = "*"
 bootstrap-flask = "*"
 flask-mail = "*"
 httpie = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.7"
