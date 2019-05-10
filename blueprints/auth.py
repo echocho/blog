@@ -12,7 +12,7 @@ def load_user(user_id):
     return Admin().get(user_id)
 
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/login/', methods=['GET', 'POST'])
 def login():
     args = request.get_json()
     username, password = args.get('username', ''), args.get('password', '')
@@ -24,7 +24,7 @@ def login():
         return 'Logged in!'
 
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout/')
 @login_required
 def logout():
     logout_user()

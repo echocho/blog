@@ -1,5 +1,5 @@
-from flask import (flash, json, jsonify, request)
-from flask import Blueprint
+from flask import (jsonify, request, Blueprint)
+from flask_login import login_required
 
 from blog.extensions import db
 from blog.models import Post
@@ -12,7 +12,8 @@ def index():
     return 'hello from admin page'
 
 
-@admin_bp.route('/articles', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@admin_bp.route('/articles/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@login_required
 def article_crud():
     if request.method == 'GET':
         return get_articles()
