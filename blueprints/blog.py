@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, make_response, request
+from flask_login import login_required
 
 from blog.extensions import db
 from blog.models import Admin, Category, Comment, Post
@@ -26,21 +27,6 @@ def index():
                     'categories': category_lst,
                     'comments': comment_lst})
 
-# from flask import make_response
-# @blog_bp.route('/cookie/')
-# def cookie():
-#     res = make_response('setting a cookie')
-#     res.set_cookie('foo', 'bar', max_age=670*60*21*2)
-#     return res
-#
-#
-# @blog_bp.route('/remove-cookie/')
-# def delete_cookie():
-#     res = make_response('deleting cookie')
-#     res.set_cookie('foo', 'bar', max_age=0)
-#     return res
-#
-
 
 @blog_bp.route('/register/', methods=['GET', 'POST'])
 def register():
@@ -56,3 +42,9 @@ def register():
         db.session.commit()
         return jsonify({'state': '201 Created'})
 
+
+@blog_bp.route('/check', methods=['GET'])
+@login_required
+def authenticated():
+    return jsonify({'state': '200 OK',
+                    'desc': 'you are authenticated!'})
