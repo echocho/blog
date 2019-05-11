@@ -21,8 +21,8 @@ def article_crud():
         return get_articles()
 
     args = request.get_json()
-    id, title, body, category_name = args.get('id', ''), args.get('title', ''), \
-                                      args.get('body', ''), args.get('category', '')
+    id, title, body, category_name = args.get('id', None), args.get('title', None), \
+                                      args.get('body', None), args.get('category', None)
 
     if request.method == 'PUT':
         return update_article(id, title, body, category_name)
@@ -42,7 +42,7 @@ def category_crud():
         return jsonify({'state': '200 OK',
                          'data': categories})
 
-    name = request.get_json().get('name', '')
+    name = request.get_json().get('name', None)
 
     if request.method == 'POST':
         return create_category(name)

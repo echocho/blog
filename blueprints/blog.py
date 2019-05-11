@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, redirect, request, url_for
 from flask_login import login_required
 
 from blog.extensions import db
-from blog.models import Admin, Comment
+from blog.models import Admin, Category, Comment, Post
 from utils import get_article_lst, get_category_lst, get_comment_lst
 
 blog_bp = Blueprint('blog', __name__)
@@ -48,8 +48,8 @@ def authenticated():
 def comment(post_id):
     if request.method == 'POST':
         args = request.get_json()
-        author, email, body, replied_id = args.get('author', ''), args.get('email', ''), \
-                                          args.get('body', ''), args.get('replied_id', '')
+        author, email, body, replied_id = args.get('author', None), args.get('email', None), \
+                                          args.get('body', None), args.get('replied_id', None)
         if all([author, email, body]):
             comment = Comment(author=author, email=email, body=body, post_id=post_id)
             if type(replied_id) is int:
@@ -61,4 +61,20 @@ def comment(post_id):
 
 @blog_bp.route('/article/<int:id>/', methods=['GET'])
 def post_details(id):
-    return jsonify({'state': 'you are reading article {}'.format(id)})
+    """
+    :param id:
+    :return: id, title, full body, category, comments[replied_id]
+    """
+    post = Post.get(id)
+    if not post:
+        return jsonify({'state': '404 Not Found'})
+    category = db.session.query(Category.name).filter_by(id=post.category_id).first()
+    comments = db.session.query(Comment).filter_by(post_id=id).all()
+    if comments:
+        comments = list(dict(zip(('id', 'author', 'email', 'body', 'replied_id'),
+                                 (c.id, c.author, c.email, c.body, c.replied_id))) for c in comments)
+    return jsonify({'state': '200 OK',
+                    'data': {'post_id': id,
+                             'category': category,
+                             'comments': comments}})
+
