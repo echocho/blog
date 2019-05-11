@@ -11,7 +11,7 @@ def get_article_lst():
     :return: id, title, first 150 characters of body
     :rtype: list()
     """
-    articles = Post.get()
+    articles = Post.get_all()
     article_lst = list(dict(zip(('id', 'title', 'body'),
                                 (article.id, article.title, article.body[:DEFAULT_BODY_SUMMARY_LENGTH])))
                        for article in articles)

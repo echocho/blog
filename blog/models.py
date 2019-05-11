@@ -150,9 +150,14 @@ class Post(db.Model):
         return True
 
     @staticmethod
-    def get():
+    def get_all():
         posts = db.session.query(Post).all()
         return posts
+
+    @staticmethod
+    def get(id):
+        post = db.session.query(Post).filter_by(id=id).first()
+        return post
 
 
 def create_category_if_not_exists(category_name):
@@ -184,7 +189,6 @@ class Comment(db.Model):
     def get():
         comments = db.session.query(Comment).all()
         return comments
-
 
 
 
