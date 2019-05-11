@@ -33,7 +33,7 @@ def get_comment_lst():
     :return: id, author, email, body, post_id, replied_id, replies_ids
     :rtype: list()
     """
-    comments = Comment.get()
+    comments = Comment.get_all()
     comment_lst = list(dict(zip(('id', 'name', 'email', 'post_id', 'body', 'replied_id'),
                                 (comment.id, comment.author, comment.email,
                                 comment.post_id, comment.body, comment.replied_id))) for comment in comments)

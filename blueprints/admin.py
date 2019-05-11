@@ -2,7 +2,7 @@ from flask import (jsonify, request, Blueprint)
 from flask_login import current_user, login_required
 
 from blog.extensions import db
-from blog.models import Admin, Post
+from blog.models import Admin, Comment
 from utils import (create_article, update_article, delete_article, get_articles,
                    get_category_lst, create_category, delete_category)
 
@@ -71,3 +71,12 @@ def edit_profile():
                              'blog_name': current_user.blog_name,
                              'about': current_user.about,
                              'blog_subtitle': current_user.blog_subtitle}})
+
+
+@admin_bp.route('/comment/<int:id>/', methods=['GET', 'DELETE'])
+@login_required
+def delete_comment(id):
+    deleted = Comment.delete(id)
+    if deleted:
+        return jsonify({'state': '200 OK'})
+    return jsonify({'state': '404 Not Found'})

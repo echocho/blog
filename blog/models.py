@@ -186,9 +186,21 @@ class Comment(db.Model):
     replies = db.relationship('Comment', back_populates='replied', cascade='all')
 
     @staticmethod
-    def get():
+    def get_all():
         comments = db.session.query(Comment).all()
         return comments
 
+    @staticmethod
+    def get(id):
+        comment = db.session.query(Comment).filter_by(id=id).first()
+        return comment
 
+    @staticmethod
+    def delete(id):
+        comment = Comment.get(id)
+        if comment:
+            db.session.query(Comment).filter_by(replied_id=id).delete()
+            db.session.query(Comment).filter_by(id=id).delete()
+            db.session.commit()
+        return True
 
