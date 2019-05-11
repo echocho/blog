@@ -16,7 +16,7 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_TEST_DATABASE_URI', \
-                                        'postgres://postgres:@localhost:5432/blog-test')
+                                        'postgres://postgres:@localhost:5432/blog_test')
 
 
 config = {'development': DevelopmentConfig,
